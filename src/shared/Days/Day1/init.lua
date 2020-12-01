@@ -1,7 +1,7 @@
 --!strict
 --[[
     Problem 1: Find two entries that sum to 2020, then calculate their product.
-    Problem 2: [ TODO ]
+    Problem 2: Find three entries in the array that sum up to 2020, then calculate their product.
 
     To efficiently find the two values that sum up to 2020, we can first sort the array (O(n log n) with a comparison sort)
      then track left and right values as we get closer to the sum we're looking for.
@@ -10,6 +10,10 @@
     If the value that we currently have (the sum of left + right) is smaller than the sum we are looking for, we increase the left value by 1;
     If the sum is what we are looking for, then we exit and return those two values (left and right).
 
+    The three-entry function runs similarly, using the two-value method as a base. It then walks iteratively through the array, one-by-one checking each value
+     to see if a sum is found (based off the target - the current value). If it can, then we can add this value in to get our total, and that creates the triplet.
+     Otherwise, we walk up to the next value in the array and check again. This continues until we find a pair with which it works.
+    
     The code is written using Luau's typed lua implementation.
     December 1st, 2020
 ]]
