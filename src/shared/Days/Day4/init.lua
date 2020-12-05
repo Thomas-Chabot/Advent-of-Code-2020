@@ -92,7 +92,6 @@ local function checkPassport(passport : Passport): boolean
             result.IsValid = false
             break
         elseif not passport[key].IsValid then
-            print(key, passport)
             result.IsValid = false
         end
     end

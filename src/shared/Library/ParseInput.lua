@@ -9,7 +9,7 @@ local ParseType = {
 }
 
 -- Core parse function - parses out each line based on a provided function
-local function parse(input : string, parseLine : (string) -> any, parseBy: string?): {any}
+local function parse(input : string, parseLine : (string) -> any, parseBy: {string}?): {any}
     if not parseBy then
         parseBy = "\n"
     end
