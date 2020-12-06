@@ -34,6 +34,15 @@ function parseNumbers(input : string, parseBy: string?) : {number}
     return parse(input, function(s) return tonumber(s) end, parseBy)
 end
 
+-- Parses a table of input strings
+function parseTable(inputs : {string}, parserFunc : (string) -> any) : {any}
+    local result = { }
+    for _,input in ipairs(inputs) do
+        table.insert(result, parserFunc(input))
+    end
+    return result
+end
+
 -- Parse out the number from a string
 function toNumber(input : string) : number
     return tonumber(string.match(input, "%d+"))
@@ -41,6 +50,7 @@ end
 
 return {
     Custom = parse,
+    ParseTable = parseTable,
     Split = splitString,
     ToNumbers = parseNumbers,
 
