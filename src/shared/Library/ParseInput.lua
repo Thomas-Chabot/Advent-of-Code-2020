@@ -17,7 +17,10 @@ local function parse(input : string, parseLine : (string) -> any, parseBy: {stri
     local result = { }
     for text in string.gmatch(input, "([^" .. parseBy .. "]+)") do
         if text ~= "" then
-            table.insert(result, parseLine(text))
+            local ret = parseLine(text)
+            if ret then
+                table.insert(result, parseLine(text))
+            end
         end
     end
 

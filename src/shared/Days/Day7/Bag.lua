@@ -24,7 +24,6 @@ function Bag:_parse(inputStr : string)
     local containedBags = { }
 
     local bagName, containingBags = inputStr:match("(.+) bags contain (.+)")
-    print(containingBags)
     if containingBags ~= "no other bags." then
         for containedBagStr in string.gmatch(containingBags, "[^,.]+") do
             local count, name = containedBagStr:match("(%d+) (.+) bag")
