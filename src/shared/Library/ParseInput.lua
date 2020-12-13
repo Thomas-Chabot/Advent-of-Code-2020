@@ -19,7 +19,7 @@ local function parse(input : string, parseLine : (string) -> any, parseBy: {stri
         if text ~= "" then
             local ret = parseLine(text)
             if ret then
-                table.insert(result, parseLine(text))
+                table.insert(result, ret)
             end
         end
     end

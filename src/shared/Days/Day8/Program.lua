@@ -43,6 +43,10 @@ function Program:Run() : boolean
     local lineNumber = 1
     local instruction = self._instructions[lineNumber]
     while instruction ~= nil and instruction:GetEncounters() == 0 do
+        if instruction._instructionType == "jmp" or instruction._instructionType == "nop" then
+            --print(lineNumber)
+        end
+        
         local lineJump = instruction:Run()
         lineNumber += lineJump
 

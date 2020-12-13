@@ -16,5 +16,5 @@ end
 
 return {
     Part1Result = getResult(require(script.Input.Input)),
-    Part2Result = getResult(require(script.Input.FixedInput))
+  --  Part2Result = getResult(require(script.Input.FixedInput))
 }
