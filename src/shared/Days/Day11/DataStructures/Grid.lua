@@ -2,27 +2,11 @@
 local Grid = { }
 Grid.__index = Grid
 
-type SeatType = number
-export type GridType = { 
-    _grid: { {SeatType} }
-}
-
 local Parser = require(game.ReplicatedStorage.Common.Library.ParseInput)
+local Seat = require(script.Parent.Seat)
 
-local SeatTypes = {
-    Empty = 1,
-    Occupied = 2,
-    Floor = 3,
-}
-local SeatValues = {
-    ["L"] = SeatTypes.Empty,
-    ["."] = SeatTypes.Floor,
-    ["#"] = SeatTypes.Occupied
-}
-local SeatToStringMap = {
-    [SeatTypes.Empty] = "L",
-    [SeatTypes.Floor] = ".",
-    [SeatTypes.Occupied] = "#"
+export type GridType = { 
+    _grid: { {Seat.SeatClassType} }
 }
 
 function Grid.new(fromString : string) : GridType
@@ -39,7 +23,7 @@ function Grid.From(otherGrid : GridType) : GridType
     for rowIndex,row in pairs(otherGrid._grid) do
         local newRow = { }
         for i,val in pairs(row) do
-            newRow[i] = val
+            newRow[i] = Seat.Copy(val)
         end
         gridData[rowIndex] = newRow
     end
@@ -58,20 +42,20 @@ function Grid:GetNumColumns()
 end
 
 function Grid:IsFloor(row : number, column : number)
-    return self:_getValue(row, column) == SeatTypes.Floor
+    return self:_getValue(row, column, function(seat) return seat:IsFloor() end, false)
 end
 function Grid:IsEmpty(row : number, column : number)
-    return self:_getValue(row, column) == SeatTypes.Empty
+    return self:_getValue(row, column, function(seat) return seat:IsEmpty() end), false
 end
 function Grid:IsOccupied(row : number, column : number)
-    return self:_getValue(row, column) == SeatTypes.Occupied
+    return self:_getValue(row, column, function(seat) return seat:IsOccupied() end, false)
 end
 
 function Grid:SetOccupied(row : number, column : number)
-    self:_setValue(row, column, SeatTypes.Occupied)
+    self:_setValue(row, column, function(seat) seat:SetOccupied() end)
 end
 function Grid:SetEmpty(row : number, column : number)
-    self:_setValue(row, column, SeatTypes.Empty)
+    self:_setValue(row, column, function(seat) seat:SetEmpty() end)
 end
 
 function Grid:CountOccupiedAdjacent(row : number, column : number)
@@ -82,7 +66,7 @@ function Grid:CountOccupiedAdjacent(row : number, column : number)
                 continue
             end
 
-            if self:_getValue(r, c) == SeatTypes.Occupied then
+            if self:IsOccupied(r, c) then
                 occupied += 1
             end
         end
@@ -112,18 +96,23 @@ function Grid:_parseRow(rowString : string) : {SeatType}
     local result = { }
     local index = 1
     for val in string.gmatch(rowString, ".") do
-        result[index] = SeatValues[val]
+        result[index] = Seat.new(val)
         index += 1
     end
     return result
 end
 
-function Grid:_getValue(row : number, column : number)
-    return (self._grid[row] and self._grid[row][column]) or SeatTypes.Floor
+function Grid:_getValue(row : number, column : number, getterFunc : (Seat.SeatClassType)->any, default: any?) : any
+    local seat = self._grid[row] and self._grid[row][column]
+    if seat then
+        return getterFunc(seat)
+    else
+        return default
+    end
 end
-function Grid:_setValue(row : number, column : number, value : SeatType)
+function Grid:_setValue(row : number, column : number, setterFunc: (Seat.SeatClassType))
     assert(self._grid[row] and self._grid[row][column], "Could not find grid row " .. tostring(row) .. " / column " .. tostring(column))
-    self._grid[row][column] = value
+    setterFunc(self._grid[row][column])
 end
 
 function Grid:__tostring()
@@ -132,7 +121,7 @@ function Grid:__tostring()
         if row ~= 1 and column == 1 then
             str = str .. "\n"
         end
-        str = str .. SeatToStringMap[self:_getValue(row, column)]
+        str = str .. tostring(self:_getValue(row, column, function(s) return s end))
     end)
     return str
 end
